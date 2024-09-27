@@ -22,23 +22,49 @@ The aim of this project is to do the following:
     * Before that make sure the GitHub Codespaces extension in installed on you VSCode desktop
     * The VSCode should automatically connect to the codespace if not the goto the Remote Explorer Section
     * From the drop down menu on top select GitHub Codespaces and then from the options below select the name of the codespace you want to connect to
-
+### Git
+    * Git ignore
+    ```bash
+        touch .gitignore
+    ```
+    * Commit Changes
 ### Pipeline
 #### Install required applications
 * Anaconda - pre installed in Git Codespace
-    * Create virtual environment
+    * Create virtual environment:
+    ```bash
+        # Path to install the virtual env in the current project directory with python 3.10 and pip
+        conda create --prefix ./.my_env python=3.12 pip 
+        #initialize the virtual environment
+        conda init
+        # restart instance
+        source ~/.bashrc
+        # now the word (base) should appear
+        # Activate the virtual env as follows
+        conda activate .my_env 
+    ```
 * Docker - pre installed in Git Codespace
 * Docker compose - pre installed in Git Codespace
 * Pull docker images for
-    * Postgres
-    * Jupyter Notebook
+    * Postgres - Create volume folder on the host machine where the data will be stored
     ```bash
         # find the versions of the required applications
         conda --version
         python --version
         docker --version
         docker compose version
-        mkdir postgres eda
+        # volume folder for postgres container
+        mkdir postgres_volume 
     ```
-* Create volumes for all the above containers on the host machine where the data will be stored
+* Jupyter Notebook
+    ```bash
+        # check if jupyter notebook is installed
+        jupyter --version
+        # if not install as follows
+        pip install jupyter notebook
+        # start jupyter notebook
+        jupyter notebook
+      ```
+
+
 

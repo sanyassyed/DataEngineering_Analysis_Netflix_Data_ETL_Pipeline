@@ -23,6 +23,7 @@ vendor/
 Thumbs.db
 
 # IDEs and Editors
+.ipynb_checkpoints/
 .vscode/
 .idea/
 *.sublime-project
