@@ -1,6 +1,6 @@
 # Netflix Data Pipeline
 The aim of this project is to do the following:
-* Setup a codespace instance
+* Setup a Git codespace instance [Know more about Git Codespace](https://github.com/features/codespaces)
 * Build Pipeline to:
     * Pull Netflix dataset
     * Load data in database
@@ -25,12 +25,20 @@ The aim of this project is to do the following:
 
 ### Pipeline
 #### Install required applications
-* Anaconda
+* Anaconda - pre installed in Git Codespace
     * Create virtual environment
-* Docker
-* Docker compose
-* Pull images for
+* Docker - pre installed in Git Codespace
+* Docker compose - pre installed in Git Codespace
+* Pull docker images for
     * Postgres
-    * Python
     * Jupyter Notebook
-* Create volumes for all the above containers
+    ```bash
+        # find the versions of the required applications
+        conda --version
+        python --version
+        docker --version
+        docker compose version
+        mkdir postgres eda
+    ```
+* Create volumes for all the above containers on the host machine where the data will be stored
+
