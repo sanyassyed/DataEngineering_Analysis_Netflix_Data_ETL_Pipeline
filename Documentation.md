@@ -8,7 +8,7 @@ The aim of this project is to do the following:
     * Perform EDA on the dataset using Python
 
 ## Steps
-### Setting up codespace instance
+### Setting up Codespace instance
 * Create a new repository on Git named `Netflix`
 * Goto [Gitcodespace](https://github.com/codespaces)
 * Select the `New codespace` option
@@ -22,15 +22,14 @@ The aim of this project is to do the following:
     * Before that make sure the GitHub Codespaces extension in installed on you VSCode desktop
     * The VSCode should automatically connect to the codespace if not the goto the Remote Explorer Section
     * From the drop down menu on top select GitHub Codespaces and then from the options below select the name of the codespace you want to connect to
-### Git
+### Git related files
     * Git ignore
     ```bash
         touch .gitignore
     ```
     * Commit Changes
-### Pipeline
-#### Install required applications
-* Anaconda - pre installed in Git Codespace
+### Project Application Installation
+1. Anaconda - pre installed in Git Codespace
     * Create virtual environment:
     ```bash
         # Path to install the virtual env in the current project directory with python 3.10 and pip
@@ -43,20 +42,51 @@ The aim of this project is to do the following:
         # Activate the virtual env as follows
         conda activate .my_env 
     ```
-* Docker - pre installed in Git Codespace
-* Docker compose - pre installed in Git Codespace
-* Pull docker images for
-    * Postgres - Create volume folder on the host machine where the data will be stored
+2. Docker - pre installed in Git Codespace
+3. Docker compose - pre installed in Git Codespace
+    * Check Versions of Applications
+        ```bash
+            # find the versions of the required applications
+            conda --version
+            python --version
+            docker --version
+            docker compose version
+            # volume folder for postgres container
+            mkdir postgres_volume 
+        ```
+4. Postgres & PgAdmin Setup
+    * Create docker-composer.yml file to use Postgres & PgAdmin containers
+    * Create volume folder (for Postgres & PgAdmin) on the host machine where the data will be stored
     ```bash
-        # find the versions of the required applications
-        conda --version
-        python --version
-        docker --version
-        docker compose version
-        # volume folder for postgres container
-        mkdir postgres_volume 
+        mkdir volume
+        mkdir volume/pgadmin
+        mkdir volume/postgres
     ```
-* Jupyter Notebook
+    * Connect and use:
+        1. Postgres DB via CLI
+        ```bash
+            conda activate ./.my_env
+            # Installing pgcli
+            pip install pgcli
+            pip install psycopg_c
+            pip install psycopg_binary
+            # Use pgcli and connect to Postgres
+            pgcli -h localhost -p 5432 -u root -d netflix
+            # enter the password same as in the docker-compose file
+            # View the tables in the Netflix db
+            \d
+        ```
+        2. Postgres DB via PgAdmin
+            * Open pgAdmin in the browser via port forwarding (VsCode should automatically give a prompt)
+            * [Source Video](https://youtu.be/qECVC6t_2mU?t=197) for following steps
+            * Get the Postgres ip address via `docker inspect pgdatabase_container_id`
+            * In pgAdmin select `Add New Server`
+            * Give any name eg: `postgresServer`
+            * Connection Tab -> Hostname add the ip address found earlier
+            * username & password `root` same as in docker-compose.yml file
+            * Select ok and now the connection to postgres should show on the left pane
+
+5. Jupyter Notebook
     ```bash
         # check if jupyter notebook is installed
         jupyter --version
@@ -66,5 +96,12 @@ The aim of this project is to do the following:
         jupyter notebook
       ```
 
-
+### Data Extraction
+* [Resource](https://github.com/zsvoboda/kaggle2db)
+* Kaggle API
+    * In order to use Kaggle API we require sign up for an account at [Kaggle](https://www.kaggle.com). 
+    * Then go to the `Account` tab of your user profile (https://www.kaggle.com/<username>/account).
+    * Select 'Create API Token'. This will trigger the download of kaggle.json, a file containing your API credentials. 
+    * The file looks like this:`{"username": "<kaggle-username>", "key": "<kaggle-key>"}`
+    * Set the KAGGLE_USERNAME and KAGGLE_KEY environment variables in the bin/env.sh or bin\env.bat script to to the <kaggle-username> and <kaggle-key> values.
 
