@@ -1,14 +1,16 @@
 # Netflix Data Pipeline
 The aim of this project is to do the following:
 * Setup a Git codespace instance [Know more about Git Codespace](https://github.com/features/codespaces)
+* Install applications required for the project on the instance
 * Build Pipeline to:
     * Pull Netflix dataset
     * Load data in database
+    * Perform preliminary EDA in the database using SQL
     * Pull data from database into Python
     * Perform EDA on the dataset using Python
 
 ## Steps
-### Setting up Codespace instance
+### Setting up Git Codespace instance
 * Create a new repository on Git named `Netflix`
 * Goto [Gitcodespace](https://github.com/codespaces)
 * Select the `New codespace` option
@@ -20,14 +22,12 @@ The aim of this project is to do the following:
     * Click on the three dots in the `On current branch` section and select `Open in VSCode` option
     * Then give permission to GitHub to access VSCode on your system
     * Before that make sure the GitHub Codespaces extension in installed on you VSCode desktop
-    * The VSCode should automatically connect to the codespace if not the goto the Remote Explorer Section
+    * The VSCode should automatically connect to the codespace if not then goto the Remote Explorer Section on the left pane
     * From the drop down menu on top select GitHub Codespaces and then from the options below select the name of the codespace you want to connect to
-### Git related files
-    * Git ignore
-    ```bash
-        touch .gitignore
-    ```
-    * Commit Changes
+    * Now you are connected to the Codespace instance
+    * Use the bash terminal for the following steps
+
+
 ### Application Installation
 1. Anaconda - pre installed in Git Codespace
     * Create virtual environment:
@@ -42,8 +42,8 @@ The aim of this project is to do the following:
         # Activate the virtual env as follows
         conda activate .my_env 
     ```
-2. Docker - pre installed in Git Codespace
-3. Docker compose - pre installed in Git Codespace
+1. Docker - pre installed in Git Codespace
+1. Docker compose - pre installed in Git Codespace
     * Check Versions of Applications
         ```bash
             # find the versions of the required applications
@@ -53,7 +53,7 @@ The aim of this project is to do the following:
             docker compose version
         ```
 
-5. Jupyter Notebook
+1. Jupyter Notebook
     ```bash
         # check if jupyter notebook is installed
         jupyter --version
@@ -64,7 +64,16 @@ The aim of this project is to do the following:
       ```
 
 ### Data Extraction
-#### Method 1: TODO: API
+
+#### Method 1: Manual Download
+* Create a folder named data on the codespace instance as follows
+```bash
+    mkdir data
+```
+* On your host machine download the data in `archive.zip` format manually from [here](https://www.kaggle.com/datasets/shivamb/netflix-shows?resource=download).
+* Drag and drop the file into the [data folder](./data) of codespace instance on VSCode from the host machine.
+
+#### Method 2: TODO: API
 * [Resource](https://github.com/zsvoboda/kaggle2db)
 * Kaggle API
     * In order to use Kaggle API we require sign up for an account at [Kaggle](https://www.kaggle.com). 
@@ -73,33 +82,35 @@ The aim of this project is to do the following:
     * The file looks like this:`{"username": "<kaggle-username>", "key": "<kaggle-key>"}`
     * Set the KAGGLE_USERNAME and KAGGLE_KEY environment variables in the bin/env.sh or bin\env.bat script to to the <kaggle-username> and <kaggle-key> values.
 
-#### Method 2: Manual Download
-* Download the data in `archive.zip` format manually from [here](https://www.kaggle.com/datasets/shivamb/netflix-shows?resource=download) on your host machine.
-* Drag and drop the file into the [data folder](./data) of codespace on VSCode from the host machine.
-
 ### Data Loading
 #### Code Files
 We need the following files on the host machine:
-##### Data & Data Loading Files
-1. `[archive.zip](./data/archive.zip)` file: When we will run the docker-compose the pgdatabase container will already have the `netflix_titles.csv` data file extracted and available in the `/data` folder.
-1. `[load_data](./data/load_data)`: contains SQL script the creates a procedure which does the following in the `netflix` database:
+
+##### 1. Git related files
+* Git ignore
+```bash
+    touch .gitignore
+```
+##### 2. Data & Data Loading Files
+1. **[archive.zip](./data/archive.zip)** file: When we run the docker-compose the pgdatabase container will already have the `netflix_titles.csv` data file extracted and available in the `/data` folder.
+1. **[load_data](./data/load_data)** file: contains SQL script the creates a procedure which does the following in the `netflix` database:
     1. Deletes the old table and creates a new one
     2. Loads data into it from `netflix_titles.csv` file
-1. `[load](./data/load)`file: this file will contain the bash script to perform data loading operations via two commands
+1. **[load](./data/load)** file: this file will contain the bash script to perform data loading operations via two commands
     1. The first command runs the SQL script in the `load_data` file which will create a procedure called `load_data()`
     2. The second command will call this stored procedure `load_data()` function which will then delete the old table, create new one, and then load data into it from the CSV file.
 
-##### Postgres DB & PgAdmin Setup Files [Source](https://www.youtube.com/watch?v=ww1Sy2uh_2o)
+##### 3. Postgres DB & PgAdmin Setup Files [Source](https://www.youtube.com/watch?v=ww1Sy2uh_2o)
 1. `Dockerfile` - that will build a PgDatabase contianer while baking the above data folder into it
 1. `docker-compose.yml` - that will initiate the build of Postgres DB & PgAdmin containers along with `Named Mounting` to store the data
 
 ### Running the containers
-1. **Start** the containers so we can create Postgres DB & start PgAdmin
+1. **Start**: the containers so we can create Postgres DB & PgAdmin applications
 ```bash
     # start the containers in detached mode
     docker compose up -d
 ```
-2. **Verify** :You can view if the data files have loaded into the Postgres DB container called `pgdatabase` by doing the following
+2. **Verify**: You can view if the data files have loaded into the Postgres DB container called `pgdatabase` by doing the following
 ```bash
     # start the containers in detached mode
     docker compose up -d
@@ -119,7 +130,7 @@ We need the following files on the host machine:
     # docker volume prune
     # docker volume ls
 ```
-3. **Load data** While on the Postgres DB container run the bash script in the [load](./data/load) file as follows:
+3. **Load data**: While on the Postgres DB container run the bash script in the [load](./data/load) file as follows:
 ```bash
     ./load
 ``` 
@@ -130,13 +141,13 @@ We need the following files on the host machine:
     * In the General Tab give any `Name` eg: `postgresServer`
     * In the Connection Tab -> 
         - Hostname/address: 
-            * Option 1: Add the database name `pgdatabase` (the same name as the Postgres DB service) or 
+            * Option 1: Add the database name `pgdatabase` (the same name as the Postgres DB service mentioned in the docker-compose.yml file) or 
             * Option 2: you can add the ip address of the Postgres DB container by using the following command  `docker inspect pgdatabase_container_id`
         - username & password `root` same as in `docker-compose.yml` file
     * Select `Save` 
     * Now the connection to Postgres DB should show on the left pane of PgAdmin under `Servers -> postgresServer -> Databases -> netflix`
-### EDA
-Now using PgAdmin we can perfrom EDA on the netflix_shows table in the netflix database
+### Preliminary EDA
+Now using PgAdmin we can perfrom Preliminary EDA on the netflix_shows table in the netflix database
 
 ## Extra Notes:
 * Start containers
