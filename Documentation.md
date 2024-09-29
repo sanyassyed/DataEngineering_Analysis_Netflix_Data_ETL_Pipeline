@@ -149,6 +149,10 @@ We need the following files on the host machine:
 ### Preliminary EDA
 Now using PgAdmin we can perfrom Preliminary EDA on the netflix_shows table in the netflix database
 
+### Deleting Conatainers & Images & Volumes
+```bash
+    docker compose down --rmi all --volumes
+```
 ## Extra Notes:
 * Start containers
     ```bash
@@ -168,5 +172,7 @@ Now using PgAdmin we can perfrom Preliminary EDA on the netflix_shows table in t
         # enter the password same as in the docker-compose file
         # View the tables in the Netflix db
         \d
+        # view table schema as follows
+        \d netflix_shows
     ```
 
