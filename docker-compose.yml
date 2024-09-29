@@ -1,23 +1,33 @@
 version: "3.9"
 services:
   pgdatabase:
-    image: postgres:14.13
+    container_name: pg_database
+    build:
+      context: .
+      dockerfile: Dockerfile
     environment:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
       - POSTGRES_DB=netflix
     volumes:
-      - "./volume/postgres:/var/lib/postgresql/data:rw"
+      - "pg_data:/var/lib/postgresql/data:rw"
     ports:
       - "5432:5432"
-    expose:
-      - "pgdatabase:5432"
   pgadmin:
+    container_name: pg_admin
     image: dpage/pgadmin4:8.12.0
     environment:
       - PGADMIN_DEFAULT_EMAIL=admin@admin.com
       - PGADMIN_DEFAULT_PASSWORD=root
     volumes:
-      - "./volume/pgadmin:/var/lib/pgadmin"
+      - "pgadmin_data:/var/lib/pgadmin"
     ports:
       - "8080:80"
+    depends_on:
+      - pgdatabase
+
+volumes:
+  pg_data:
+    name: pg_data
+  pgadmin_data:
+    name: pgadmin_data

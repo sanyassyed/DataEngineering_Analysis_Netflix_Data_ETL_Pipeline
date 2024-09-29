@@ -1,0 +1,10 @@
+#!/bin/bash
+# This connects to a PostgreSQL database named netflix using the psql command-line interface.
+# -a: This flag tells psql to echo all input lines to the standard output
+# > /dev/null: This redirects the output of the command to /dev/null, essentially discarding it
+# The -c flag allows you to run a single SQL command
+
+psql netflix -a -f load_data > /dev/null
+psql netflix -c 'call load_data();' > /dev/null
+
+echo "Tables have been created and populated"

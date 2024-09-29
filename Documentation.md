@@ -28,7 +28,7 @@ The aim of this project is to do the following:
         touch .gitignore
     ```
     * Commit Changes
-### Project Application Installation
+### Application Installation
 1. Anaconda - pre installed in Git Codespace
     * Create virtual environment:
     ```bash
@@ -51,40 +51,7 @@ The aim of this project is to do the following:
             python --version
             docker --version
             docker compose version
-            # volume folder for postgres container
-            mkdir postgres_volume 
         ```
-4. Postgres & PgAdmin Setup
-    * Create docker-composer.yml file to use Postgres & PgAdmin containers
-    * Create volume folder (for Postgres & PgAdmin) on the host machine where the data will be stored
-    ```bash
-        mkdir volume
-        mkdir volume/pgadmin
-        mkdir volume/postgres
-    ```
-    * Connect and use:
-        1. Postgres DB via CLI
-        ```bash
-            conda activate ./.my_env
-            # Installing pgcli
-            pip install pgcli
-            pip install psycopg_c
-            pip install psycopg_binary
-            # Use pgcli and connect to Postgres
-            pgcli -h localhost -p 5432 -u root -d netflix
-            # enter the password same as in the docker-compose file
-            # View the tables in the Netflix db
-            \d
-        ```
-        2. Postgres DB via PgAdmin
-            * Open pgAdmin in the browser via port forwarding (VsCode should automatically give a prompt)
-            * [Source Video](https://youtu.be/qECVC6t_2mU?t=197) for following steps
-            * Get the Postgres ip address via `docker inspect pgdatabase_container_id`
-            * In pgAdmin select `Add New Server`
-            * Give any name eg: `postgresServer`
-            * Connection Tab -> Hostname add the ip address found earlier
-            * username & password `root` same as in docker-compose.yml file
-            * Select ok and now the connection to postgres should show on the left pane
 
 5. Jupyter Notebook
     ```bash
@@ -97,7 +64,7 @@ The aim of this project is to do the following:
       ```
 
 ### Data Extraction
-#### TODO: API
+#### Method 1: TODO: API
 * [Resource](https://github.com/zsvoboda/kaggle2db)
 * Kaggle API
     * In order to use Kaggle API we require sign up for an account at [Kaggle](https://www.kaggle.com). 
@@ -106,5 +73,89 @@ The aim of this project is to do the following:
     * The file looks like this:`{"username": "<kaggle-username>", "key": "<kaggle-key>"}`
     * Set the KAGGLE_USERNAME and KAGGLE_KEY environment variables in the bin/env.sh or bin\env.bat script to to the <kaggle-username> and <kaggle-key> values.
 
-#### Manual Download
-* 
+#### Method 2: Manual Download
+* Download the data in `archive.zip` format manually from [here](https://www.kaggle.com/datasets/shivamb/netflix-shows?resource=download) on your host machine.
+* Drag and drop the file into the [data folder](./data) of codespace on VSCode from the host machine.
+
+### Data Loading
+#### Code Files
+We need the following files on the host machine:
+##### Data & Data Loading Files
+1. `[archive.zip](./data/archive.zip)` file: When we will run the docker-compose the pgdatabase container will already have the `netflix_titles.csv` data file extracted and available in the `/data` folder.
+1. `[load_data](./data/load_data)`: contains SQL script the creates a procedure which does the following in the `netflix` database:
+    1. Deletes the old table and creates a new one
+    2. Loads data into it from `netflix_titles.csv` file
+1. `[load](./data/load)`file: this file will contain the bash script to perform data loading operations via two commands
+    1. The first command runs the SQL script in the `load_data` file which will create a procedure called `load_data()`
+    2. The second command will call this stored procedure `load_data()` function which will then delete the old table, create new one, and then load data into it from the CSV file.
+
+##### Postgres DB & PgAdmin Setup Files [Source](https://www.youtube.com/watch?v=ww1Sy2uh_2o)
+1. `Dockerfile` - that will build a PgDatabase contianer while baking the above data folder into it
+1. `docker-compose.yml` - that will initiate the build of Postgres DB & PgAdmin containers along with `Named Mounting` to store the data
+
+### Running the containers
+1. **Start** the containers so we can create Postgres DB & start PgAdmin
+```bash
+    # start the containers in detached mode
+    docker compose up -d
+```
+2. **Verify** :You can view if the data files have loaded into the Postgres DB container called `pgdatabase` by doing the following
+```bash
+    # start the containers in detached mode
+    docker compose up -d
+    # check if containers have started
+    docker ps -a
+    # log into the pg_database container in interactive mode and drop into the bash shell
+    docker exec -it pg_database /bin/bash
+    # you will log into the working dir which is /data
+    ls
+    # will display the netflix_titles.csv file
+    # stop the containers
+    # docker compose down
+    # to remove volumes too
+    # docker compose down --volumes
+    # clean the volumes and containers
+    # docker container prune
+    # docker volume prune
+    # docker volume ls
+```
+3. **Load data** While on the Postgres DB container run the bash script in the [load](./data/load) file as follows:
+```bash
+    ./load
+``` 
+4. **Use PgAdmin**: Connect to Postgres DB via PgAdmin as follows: [Source Video](https://youtu.be/qECVC6t_2mU?t=197) for following steps
+    * Open pgAdmin in the browser via port forwarding available under PORTS tab in VSCode (VSCode should automatically give a prompt)
+    * Enter the PgAdmin email and password as in the [docker-compose.yml](./docker-compose.yml) file
+    * Then select `Add New Server`
+    * In the General Tab give any `Name` eg: `postgresServer`
+    * In the Connection Tab -> 
+        - Hostname/address: 
+            * Option 1: Add the database name `pgdatabase` (the same name as the Postgres DB service) or 
+            * Option 2: you can add the ip address of the Postgres DB container by using the following command  `docker inspect pgdatabase_container_id`
+        - username & password `root` same as in `docker-compose.yml` file
+    * Select `Save` 
+    * Now the connection to Postgres DB should show on the left pane of PgAdmin under `Servers -> postgresServer -> Databases -> netflix`
+### EDA
+Now using PgAdmin we can perfrom EDA on the netflix_shows table in the netflix database
+
+## Extra Notes:
+* Start containers
+    ```bash
+        # starts the containers in detached mode
+        docker compose up -d
+    ```
+* Test Connection to Postgres DB & PgAdmin:
+    1. From host machine Connect to Postgres DB via CLI
+    ```bash
+        conda activate ./.my_env
+        # Installing pgcli
+        pip install pgcli
+        pip install psycopg_c
+        pip install psycopg_binary
+        # Use pgcli and connect to Postgres DB
+        pgcli -h localhost -p 5432 -u root -d netflix
+        # enter the password same as in the docker-compose file
+        # View the tables in the Netflix db
+        \d
+    ```
+

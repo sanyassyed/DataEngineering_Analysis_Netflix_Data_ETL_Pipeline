@@ -1,0 +1,26 @@
+CREATE OR REPLACE PROCEDURE public.load_data(
+	)
+LANGUAGE 'sql'
+AS $BODY$
+drop table if exists netflix_shows;
+
+CREATE TABLE netflix_shows(
+show_id	varchar(10),
+show_type varchar(20),
+title	varchar(255),
+director varchar(255),
+show_cast text,
+country	varchar(255),
+date_added	date,
+release_year int,
+rating varchar(10),
+duration varchar(50),
+listed_in text,
+show_description text);
+
+copy netflix_shows FROM '/data/netflix_titles.csv' DELIMITER ',' CSV HEADER;
+
+$BODY$;
+
+ALTER PROCEDURE public.load_data()
+    OWNER TO root;
