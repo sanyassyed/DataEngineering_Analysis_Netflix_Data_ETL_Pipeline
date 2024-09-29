@@ -97,6 +97,7 @@ The aim of this project is to do the following:
       ```
 
 ### Data Extraction
+#### TODO: API
 * [Resource](https://github.com/zsvoboda/kaggle2db)
 * Kaggle API
     * In order to use Kaggle API we require sign up for an account at [Kaggle](https://www.kaggle.com). 
@@ -105,3 +106,5 @@ The aim of this project is to do the following:
     * The file looks like this:`{"username": "<kaggle-username>", "key": "<kaggle-key>"}`
     * Set the KAGGLE_USERNAME and KAGGLE_KEY environment variables in the bin/env.sh or bin\env.bat script to to the <kaggle-username> and <kaggle-key> values.
 
+#### Manual Download
+* 
