@@ -84,7 +84,7 @@ The aim of this project is to do the following:
 
 ### Data Loading
 #### Code Files
-We need the following files on the host machine:
+We need the following files on the Git codespace instance:
 
 ##### 1. Git related files
 * Git ignore
@@ -153,6 +153,9 @@ Now using PgAdmin we can perfrom Preliminary EDA on the netflix_shows table in t
 ```bash
     docker compose down --rmi all --volumes
 ```
+
+## Run the Load Pipeline
+Find [here](./README.md#load-pipeline) the steps to simply run the load pipeline
 ## Extra Notes:
 * Start containers
     ```bash
@@ -175,4 +178,11 @@ Now using PgAdmin we can perfrom Preliminary EDA on the netflix_shows table in t
         # view table schema as follows
         \d netflix_shows
     ```
+
+    ## Todo:
+    * Pull data directly from kaggle
+    * Use a Makefile to run the load code automatically
+    * Perform Preliminary EDA using PSQL
+    * Pull data into Python
+    * Perform EDA
 
