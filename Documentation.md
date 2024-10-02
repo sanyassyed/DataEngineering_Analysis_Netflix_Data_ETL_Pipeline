@@ -146,6 +146,8 @@ We need the following files on the Git codespace instance:
         - username & password `root` same as in `docker-compose.yml` file
     * Select `Save` 
     * Now the connection to Postgres DB should show on the left pane of PgAdmin under `Servers -> postgresServer -> Databases -> netflix`
+
+---
 ### Preliminary EDA
 Now using PgAdmin we can perfrom Preliminary EDA on the netflix_shows table in the netflix database
 
@@ -157,20 +159,8 @@ Now using PgAdmin we can perfrom Preliminary EDA on the netflix_shows table in t
 ## Run the Load Pipeline
 Find [here](./README.md#load-pipeline) the steps to simply run the load pipeline
 
-## PgAdmin container
-* Entering via CLI
-Use the following command to enter the PgAdmin container shell
-```shell
-    docker exec -it pg_admin sh
-```
-* Saved queries:
-The queries saved in PgAdmin container can be found here on Gitcodespace
-```bash
-    sudo ls -lah /var/lib/docker/volumes/pgadmin_data/_data/storage/admin_admin.com
-    # copy any file from here onto anywhere in the host machine as follows
-    sudo cp -r /var/lib/docker/volumes/pgadmin_data/_data/storage/admin_admin.com/eda_queries.sql ./queries/
-```
-## Extra Notes:
+---
+# Extra Notes:
 * Start containers
     ```bash
         # starts the containers in detached mode
@@ -192,11 +182,172 @@ The queries saved in PgAdmin container can be found here on Gitcodespace
         # view table schema as follows
         \d netflix_shows
     ```
+---
+## PgAdmin container commands
+* Entering via CLI
+Use the following command to enter the PgAdmin container shell
+```shell
+    docker exec -it pg_admin sh
+```
+* Saved queries:
+The queries saved in PgAdmin container can be found here on Gitcodespace
+```bash
+    sudo ls -lah /var/lib/docker/volumes/pgadmin_data/_data/storage/admin_admin.com
+    # copy any file from here onto anywhere in the host machine as follows
+    sudo cp -r /var/lib/docker/volumes/pgadmin_data/_data/storage/admin_admin.com/eda_queries.sql ./queries/
+```
+---
+## Postgres SQL Special Functions Used:
+Here are the **special PostgreSQL functions** used in the queries, along with their **syntax**, **descriptions**, and **sample usage**:
 
-    ## Todo:
-    * Pull data directly from kaggle
-    * Use a Makefile to run the load code automatically
-    * Perform Preliminary EDA using PSQL
-    * Pull data into Python
-    * Perform EDA
+### 1. **`EXTRACT`**
+   - **Syntax**: `EXTRACT(field FROM source)`
+   - **Description**: Extracts a specific part (such as year, month, day, etc.) from a date or time value.
+   - **Example**: To extract the year from a date:
+     ```sql
+     SELECT EXTRACT(YEAR FROM date_added) AS year_added
+     FROM netflix_shows;
+     ```
+
+### 2. **`SIMILAR TO`**
+   - **Syntax**: `expression SIMILAR TO pattern`
+   - **Description**: Matches a string against a SQL regular expression pattern. It’s a more flexible version of `LIKE` with regular expressions.
+   - **Example**: To find rows where `listed_in` contains either "reality tv" or "horror":
+     ```sql
+     SELECT *
+     FROM netflix_shows
+     WHERE LOWER(listed_in) SIMILAR TO '%(reality%tv|horror)%';
+     ```
+
+### 3. **`STRING_TO_ARRAY`**
+   - **Syntax**: `STRING_TO_ARRAY(string, delimiter)`
+   - **Description**: Splits a string into an array using a delimiter.
+   - **Example**: To split the `show_cast` string by commas:
+     ```sql
+     SELECT UNNEST(STRING_TO_ARRAY(show_cast, ', ')) AS actor
+     FROM netflix_shows;
+     ```
+
+### 4. **`UNNEST`**
+   - **Syntax**: `UNNEST(array)`
+   - **Description**: Expands an array into a set of rows.
+   - **Example**: To break down an array of actors into individual rows:
+     ```sql
+     SELECT UNNEST(STRING_TO_ARRAY(cast, ', ')) AS actor
+     FROM netflix_shows;
+     ```
+
+### 5. **`REGEXP_REPLACE`**
+   - **Syntax**: `REGEXP_REPLACE(string, pattern, replacement)`
+   - **Description**: Replaces substrings that match a regular expression pattern with another substring.
+   - **Example**: To remove non-numeric characters from the `duration` field:
+     ```sql
+     SELECT REGEXP_REPLACE(duration, '[^0-9]', '', 'g') AS duration_numeric
+     FROM netflix_shows;
+     ```
+   - In this case, the pattern [^0-9] matches any character that is not a digit (0-9). By using the 'g' flag, the function ensures that all non-numeric characters in the duration string are replaced with an empty string (''), effectively removing them.
+### 6. **`SPLIT_PART`**
+   - **Syntax**: `SPLIT_PART(string, delimiter, field)`
+   - **Description**: Extracts a specific part of a string based on a delimiter.
+   - **Example**: To extract the numeric part of the `duration` column:
+     ```sql
+     SELECT SPLIT_PART(duration, ' ', 1)::INTEGER AS duration_in_mins
+     FROM netflix_shows;
+     ```
+   - `1` represents the position of the part of the string that you want to extract after splitting the duration column by spaces.
+### 7. **`POSITION`**
+   - **Syntax**: `POSITION(substring IN string)`
+   - **Description**: Returns the position of a substring within a string (1-based index).
+   - **Example**: To find the position of the first space in the `duration` column:
+     ```sql
+     SELECT POSITION(' ' IN duration)
+     FROM netflix_shows;
+     ```
+
+### 8. **`SUBSTRING`**
+   - **Syntax**: `SUBSTRING(string FROM start FOR length)`
+   - **Description**: Extracts a substring from a string.
+   - **Example**: To extract the numeric part of the `duration`:
+     ```sql
+     SELECT SUBSTRING(duration, 0, POSITION(' ' IN duration)) AS duration_part
+     FROM netflix_shows;
+     ```
+
+### 9. **`RANK()`**
+   - **Syntax**: `RANK() OVER (ORDER BY column)`
+   - **Description**: Assigns a rank to rows within a result set based on a given order. Ties are assigned the same rank, and the rank jumps by the number of tied rows.
+   - **Example**: To rank directors by the number of movies they’ve directed:
+     ```sql
+     SELECT director, RANK() OVER (ORDER BY total_movies DESC) AS rank
+     FROM director_actor;
+     ```
+
+### 10. **`CASE WHEN`**
+   - **Syntax**: `CASE WHEN condition THEN result [ELSE result] END`
+   - **Description**: Conditional expression to evaluate conditions and return results accordingly.
+   - **Example**: To count movies and TV shows separately:
+     ```sql
+     SELECT SUM(CASE WHEN show_type = 'Movie' THEN 1 ELSE 0 END) AS total_movies
+     FROM netflix_shows;
+     ```
+
+### 11. **`WITH (Common Table Expressions - CTEs)`**
+   - **Syntax**: `WITH cte_name AS (query) SELECT * FROM cte_name;`
+   - **Description**: Used to create a temporary result set that can be referenced within a SELECT, INSERT, UPDATE, or DELETE statement.
+   - **Example**: To rank directors based on movies they directed:
+     ```sql
+     WITH director_actor AS (
+         SELECT director, COUNT(*) AS total_movies
+         FROM netflix_shows
+         WHERE LOWER(director) IN (
+             SELECT TRIM(BOTH ' ' FROM UNNEST(STRING_TO_ARRAY(LOWER(show_cast), ',')))
+         )
+         GROUP BY director
+     )
+     SELECT director, total_movies
+     FROM director_actor
+     ORDER BY total_movies DESC;
+     ```
+### 12. **`CAST`**
+- **Purpose**: Converts a value from one data type to another.
+- **Syntax**: `CAST(value AS target_data_type)` or `value::target_data_type`.
+  
+  **Example**:
+  ```sql
+  SELECT CAST('123' AS INTEGER); -- Converts the string '123' to the integer 123
+  ```
+
+### 13. **`TRIM`**
+- **Purpose**: Removes leading and/or trailing spaces (or specified characters) from a string.
+- **Syntax**: 
+  - `TRIM([LEADING | TRAILING | BOTH] [characters FROM] string)`
+  - Default removes spaces from both ends.
+  
+  **Example**:
+  ```sql
+  SELECT TRIM('  Hello  '); -- Returns 'Hello' (removes leading and trailing spaces)
+  ```
+
+### 14. **`~ ('(^|, )' || director || '($|, )')`**
+- **Purpose**: The `~` operator is used for pattern matching using regular expressions.
+- **Regex Explanation**:
+  - `^` matches the start of a string.
+  - `$` matches the end of a string.
+  - `, ` matches a comma followed by a space.
+  - `|` represents OR.
+  
+  **Example**:
+  ```sql
+  SELECT 'director_name' ~ ('(^|, )' || 'director_name' || '($|, )'); -- Checks if 'director_name' is a full match in a list
+  ```
+---
+
+These PostgreSQL functions enable more advanced data manipulation and querying, helping to extract meaningful insights from datasets.
+
+## Todo:
+* Pull data directly from kaggle
+* Use a Makefile to run the load code automatically
+* Perform Preliminary EDA using PSQL
+* Pull data into Python
+* Perform EDA
 
