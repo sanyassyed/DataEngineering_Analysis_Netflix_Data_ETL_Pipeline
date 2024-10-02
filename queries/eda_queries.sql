@@ -160,7 +160,49 @@ WHERE listed_in iLIKE '%reality%tv%' AND
       listed_in iLIKE '%horror%' AND
 	  release_year BETWEEN (EXTRACT(YEAR FROM CURRENT_DATE)-3) AND (EXTRACT(YEAR FROM CURRENT_DATE));
 
--- Show TV shows and movies where director acted in the movie and based out in United States
+-- Show TV shows and movies where director acted in the movie and based out of United States
+SELECT title,
+       director,
+	   show_cast, 
+	   country
+FROM netflix_shows
+WHERE show_cast ILIKE '%'||director||'%' AND
+      country ILIKE '%united states%'; --119
 
+SELECT title,
+       director,
+	   show_cast, 
+	   country
+FROM netflix_shows
+WHERE country ILIKE '%united states%' AND
+      director IN ()
+	  
+-- Show directors who are also actors 
+-- and worked in different movie
+SELECT DISTINCT(director)
+FROM netflix_shows
+WHERE director IN (SELECT DISTINCT UNNEST(string_to_array((SELECT STRING_AGG(show_cast, ',') actors 
+						                          FROM netflix_shows
+												  ), ','
+												  )
+									)
+					) AND
+	  show_cast NOT ILIKE '%'||director||'%'; 
 
--- Show directors who are also actors -- and worked in different movie
+WITH dir AS 
+(
+SELECT 
+distinct director, title
+FROM netflix_shows ns 
+WHERE director <>''
+)
+SELECT 
+DISTINCT 
+d.director AS director_actor, a.title, a.show_cast
+FROM dir d, netflix_shows a
+WHERE (A.show_cast LIKE '%'|| D.director||',%' OR A.show_cast LIKE '%, '||D.director)
+AND a.director <> d.director
+AND a.title<>d.title
+AND a.show_cast<>''
+AND a.title <> ''
+LIMIT 100;
