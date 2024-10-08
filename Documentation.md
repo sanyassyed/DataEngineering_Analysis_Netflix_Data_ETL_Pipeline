@@ -192,6 +192,7 @@ Use the following command to enter the PgAdmin container shell
 * Saved queries:
 The queries saved in PgAdmin container can be found here on Gitcodespace
 ```bash
+    # show files
     sudo ls -lah /var/lib/docker/volumes/pgadmin_data/_data/storage/admin_admin.com
     # copy any file from here onto anywhere in the host machine as follows
     sudo cp -r /var/lib/docker/volumes/pgadmin_data/_data/storage/admin_admin.com/eda_queries.sql ./queries/
