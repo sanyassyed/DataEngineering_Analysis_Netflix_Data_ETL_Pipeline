@@ -257,17 +257,49 @@ FROM netflix_shows
 WHERE duration IS NOT NULL
 GROUP BY show_type;
 
--- What genres are most popular in certain countries?
-SELECT country,
-       listed_in
-FROM netflix_shows
-WHERE country IS NOT NULL AND
-      listed_in IS NOT NULL;
+-- What genres are the top 3 most popular in certain countries? Use dense rank
+-- 418 rows
 
-SELECT show_id,
-UNNEST(STRING_TO_ARRAY(country, ', ')) AS country,
-           UNNEST(STRING_TO_ARRAY(listed_in, ', ')) AS genre
-FROM netflix_shows
-WHERE country IS NOT NULL AND
-      listed_in IS NOT NULL;
-;
+SELECT * FROM netflix_shows
+LIMIT 3;
+
+WITH country_unnest_tbl
+AS (
+	SELECT show_id,
+		   TRIM (BOTH ' ' FROM UNNEST (string_to_array(LOWER(country), ','))) country_single
+	FROM netflix_shows
+	WHERE country IS NOT NULL
+	),
+genre_unnest_tbl
+AS (
+	SELECT show_id,
+	       TRIM (BOTH ' ' FROM UNNEST (STRING_TO_ARRAY(LOWER(listed_in), ','))) genre
+	FROM netflix_shows
+	WHERE listed_in IS NOT NULL
+	),
+grouped_tbl
+AS (
+SELECT 
+       c.country_single country,
+	   g.genre genre,
+	   COUNT(*) total_shows
+FROM country_unnest_tbl c,
+     genre_unnest_tbl g
+WHERE c.show_id = g.show_id AND
+      c.country_single <> '' AND
+	  genre <> ''
+GROUP BY 
+         c.country_single,
+		 g.genre),
+ranked_tbl 
+AS 
+	(SELECT country,
+	       genre,
+		   total_shows,
+		   DENSE_RANK() OVER (PARTITION BY country ORDER BY total_shows DESC) top_genre_ranking
+	FROM grouped_tbl
+	)
+SELECT * 
+FROM ranked_tbl
+WHERE top_genre_ranking <= 3;
+
