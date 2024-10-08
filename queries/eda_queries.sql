@@ -257,7 +257,7 @@ FROM netflix_shows
 WHERE duration IS NOT NULL
 GROUP BY show_type;
 
--- What genres are the top 3 most popular in certain countries? Use dense rank
+-- What are the top 3 most popular genres in each country based on the number of Netflix shows, using a dense rank to break ties?
 -- 418 rows
 
 SELECT * FROM netflix_shows
