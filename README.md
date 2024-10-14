@@ -1,6 +1,16 @@
-# Netflix
-* Data Pipeline to Pull and Analyze Netflix Dataset
-* Project documentation [here](./Documentation.md)
+# Netflix Data Pipeline Project
+
+This project demonstrates the development of a data pipeline to extract, load, and analyze a Netflix dataset. The goal is to create an end-to-end data engineering solution that automates data ingestion, transformation, and storage in a PostgreSQL database, with the ability to perform analytics using pgAdmin.
+
+## Project Overview
+The pipeline is designed to showcase key data engineering skills such as data extraction, transformation, and loading (ETL). It uses containerized services (PostgreSQL and pgAdmin) to ensure a portable and easy-to-setup environment. Data is pulled from a public Netflix dataset available on Kaggle, loaded into a PostgreSQL database, and made available for querying and analysis through pgAdmin. The pipeline is built using Docker to create an isolated environment for running and managing services.
+
+## Features
+- **Automated Data Ingestion**: The data is processed and loaded into the PostgreSQL database using SQL procedures and a Bash script.
+- **Containerized Architecture**: PostgreSQL and pgAdmin run as containers, providing easy portability and setup.
+- **Data Transformation**: SQL scripts handle data cleaning and transformation as part of the loading process.
+- **pgAdmin Integration**: After the data is loaded, pgAdmin provides a user-friendly interface to query and explore the Netflix dataset.
+- **Easy Deployment**: The entire pipeline can be deployed with a few simple commands, making it reproducible and scalable.
 
 ## Load Pipeline
 * Fork this repo and open it in GitCodespace ([Steps here](./Documentation.md#setting-up-git-codespace-instance)) using VSCode or clone the repo on your local system (ensure you have all the required applications installed - [See here](./Documentation.md#application-installation)).
@@ -21,7 +31,7 @@
     make clean-slate
 ```
 
-## Important Files
+## Key Files and Directories
 * [Documentation.md](./Documentation.md): Contains the project documentation.
 * [Dockerfile](./Dockerfile): This Dockerfile does the following:
     * Creates a container using the PostgreSQL database image.
@@ -46,4 +56,3 @@
     * `down`: Stops the containers.
     * `clean-slate`: Deletes the containers, volumes, and images.
 * [queries folder](./queries/): Contains the queries run in pgAdmin. This data is stored in the pgAdmin volume mounted at `/var/lib/docker/volumes/pgadmin_data/_data/storage/admin_admin.com/eda_queries.sql`.
-  
