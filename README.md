@@ -1,7 +1,3 @@
-Here is the edited version of your markdown documentation with corrections for typos and readability:
-
----
-
 # Netflix
 * Data Pipeline to Pull and Analyze Netflix Dataset
 * Project documentation [here](./Documentation.md)
