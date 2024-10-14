@@ -28,7 +28,7 @@
     * Sets `/data` as the working directory in the container
     * Copies all the files in the `data` folder on the local system into the `data` folder on the container
     * runs commands on to update and upgrade apt-get, unzip archive.zip and change the permissions for the other files in data to 777
-* [docker-compose.yml](./docker-compose.yml): yml file that starts 2 services (as containers) using volume mounting
+* [docker-compose.yml](./docker-compose.yml): yml file that starts 2 services (as containers) with volume mounting
     1. Postgres: Builds the postgres container from the Dockerfile
     2. PgAdmin  
 * [data folder](./data/) : contains data related files
