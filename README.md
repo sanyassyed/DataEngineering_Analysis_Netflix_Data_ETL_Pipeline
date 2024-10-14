@@ -12,10 +12,35 @@ The pipeline is designed to showcase key data engineering skills such as data ex
 - **pgAdmin Integration**: After the data is loaded, pgAdmin provides a user-friendly interface to query and explore the Netflix dataset.
 - **Easy Deployment**: The entire pipeline can be deployed with a few simple commands, making it reproducible and scalable.
 
+## ETL Process
+
+### 1. Extraction
+- **Data Source**: The raw data is obtained from the Netflix dataset available on [Kaggle](https://www.kaggle.com/datasets/shivamb/netflix-shows?resource=download) in CSV format.
+- **Data Format**: The dataset is packaged in a `archive.zip` file, which contains the `netflix_titles.csv` file.
+
+### 2. Transformation
+- **Data Cleaning**: Before loading, the SQL script ensures that any existing `netflix_shows` table is dropped, preventing conflicts.
+- **Data Structure**: A new `netflix_shows` table is created with appropriate data types for each field, including:
+  - `show_id`: varchar(10) (Primary Key)
+  - `show_type`: varchar(20)
+  - `title`: varchar(255)
+  - `director`: varchar(255)
+  - `show_cast`: text
+  - `country`: varchar(255)
+  - `date_added`: date
+  - `release_year`: int
+  - `rating`: varchar(10)
+  - `duration`: varchar(50)
+  - `listed_in`: text
+  - `show_description`: text
+
+### 3. Loading
+- **Data Insertion**: The `COPY` command in the SQL script is used to load data from the `netflix_titles.csv` file directly into the `netflix_shows` table. This method is efficient and allows for bulk loading of data.
+
 ## Load Pipeline
 * Fork this repo and open it in GitCodespace ([Steps here](./Documentation.md#setting-up-git-codespace-instance)) using VSCode or clone the repo on your local system (ensure you have all the required applications installed - [See here](./Documentation.md#application-installation)).
 * Download the data:
-    * On your host machine, download the data in `archive.zip` format manually from [here](https://www.kaggle.com/datasets/shivamb/netflix-shows?resource=download).
+    * On your host machine, download the data in `archive.zip` format manually from [Kaggle](https://www.kaggle.com/datasets/shivamb/netflix-shows?resource=download).
     * Drag and drop the file into the [data folder](./data) of the Codespace instance in VSCode from your host machine.
 * Run the following commands in the GitCodespace server's terminal:
 ```bash
