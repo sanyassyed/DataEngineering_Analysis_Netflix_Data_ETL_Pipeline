@@ -37,7 +37,7 @@
         * Drops if table `netflix_shows` exists
         * Creates a new table `netflix_shows`
         * Loads data from the .csv file into the table just created
-    * [load](./data/load): bash script that runs `psql` commands to
+    * [load](./data/load): bash script that runs `psql` commands on the `netflix` database to
         1. run the script in load_data file which will create the load_data() procedure
         2. run the command to call the load_data() procedure
 * [Makefile](./Makefile): contains commands to: 
