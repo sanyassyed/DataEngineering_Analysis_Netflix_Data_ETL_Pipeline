@@ -76,7 +76,7 @@ The pipeline is designed to showcase key data engineering skills such as data ex
         1. Run the script in `load_data.sql` to create the `load_data()` procedure.
         2. Run the command to call the `load_data()` procedure.
 * [Makefile](./Makefile): Contains commands to:
-    * `up`: Starts the containers.
+    * `up`: Starts the containers
     * `load-data`: Loads the data into the PostgreSQL container using the `docker exec` command.
     * `down`: Stops the containers.
     * `clean-slate`: Deletes the containers, volumes, and images.
