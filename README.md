@@ -1,6 +1,6 @@
 # Netflix Data Pipeline Project
 
-This project demonstrates the development of a data pipeline to extract, load, and analyze a Netflix dataset. The goal is to create an end-to-end data engineering solution that automates data ingestion, transformation, and storage in a PostgreSQL database, with the ability to perform analytics using pgAdmin.
+This project demonstrates the development of an end-to-end data engineering solution that automates data ingestion, transformation, and storage in a PostgreSQL database, with the ability to perform analytics using pgAdmin. It follows a modular monolithic architecture, where PostgreSQL and pgAdmin are decoupled into separate containers but orchestrated together using Docker Compose. This approach leverages containerization for ease of setup and management, while maintaining tight integration, making it suitable for smaller-scale data engineering solutions.
 
 ## Project Overview
 The pipeline is designed to showcase key data engineering skills such as data extraction, transformation, and loading (ETL). It uses containerized services (PostgreSQL and pgAdmin) to ensure a portable and easy-to-setup environment. Data is pulled from a public Netflix dataset available on Kaggle, loaded into a PostgreSQL database, and made available for querying and analysis through pgAdmin. The pipeline is built using Docker to create an isolated environment for running and managing services.
