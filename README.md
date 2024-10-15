@@ -63,7 +63,7 @@ The pipeline is designed to showcase key data engineering skills such as data ex
     * Sets `/data` as the working directory in the container.
     * Copies all the files in the `data` folder on the local system into the `data` folder in the container.
     * Runs commands to update and upgrade `apt-get`, unzip `archive.zip`, and change the permissions for the other files in `data` to 777.
-* [docker-compose.yml](./docker-compose.yml): A YAML file that starts two services (as containers) with volume mounting:
+* [docker-compose.yml](./docker-compose.yml): A YAML file that starts two services (as containers) with named mounting:
     1. PostgreSQL: Builds the PostgreSQL container from the Dockerfile.
     2. pgAdmin.
 * [data folder](./data/): Contains data-related files:
