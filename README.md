@@ -1,4 +1,4 @@
-# Netflix Data Pipeline Project
+# Netflix Data ETL Pipeline Project
 
 This project demonstrates the development of an end-to-end data engineering solution that automates data ingestion, transformation, and storage in a PostgreSQL database, with the ability to perform analytics using pgAdmin. It follows a modular monolithic architecture, where PostgreSQL and pgAdmin are decoupled into separate containers but orchestrated together using Docker Compose. This approach leverages containerization for ease of setup and management, while maintaining tight integration, making it suitable for smaller-scale data engineering solutions.
 
